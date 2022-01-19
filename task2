@@ -1,0 +1,27 @@
+import asyncio
+import aiohttp
+from tqdm import tqdm
+
+input_url = "http://www." + (input("Введите адрес в формате 'google.com': "))
+pbar = tqdm(total=1000)
+
+
+async def get(url, session):
+    try:
+        async with session.get(url=url) as response:
+            resp = await response.read()
+            pbar.update(1)
+    except Exception as e:
+        print("Не удалось подключиться к {} Ошибка:  {}.".format(url, e.__class__))
+
+
+async def main(urls):
+    async with aiohttp.ClientSession() as session:
+        ret = await asyncio.gather(*[get(url, session) for url in urls])
+
+
+# urls = ['http://www.google.com'] * 1000
+urls = [input_url] * 1000
+
+asyncio.run(main(urls))
+pbar.close()
